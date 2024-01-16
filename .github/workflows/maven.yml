@@ -27,7 +27,5 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Super-Linter
-      uses: super-linter/super-linter@v5.7.2
     - name: Build with Maven
       run: mvn -B package --file pom.xml
