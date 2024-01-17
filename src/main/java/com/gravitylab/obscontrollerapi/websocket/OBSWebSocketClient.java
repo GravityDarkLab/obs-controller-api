@@ -11,6 +11,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
+import com.gravitylab.obscontrollerapi.utils.AuthTokenGenerationException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -122,7 +124,7 @@ public class OBSWebSocketClient extends WebSocketClient {
 		try {
 			return generateSecret(salt, challenge);
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
+			throw new AuthTokenGenerationException("Failed to generate auth token", e);
 		}
 	}
 
