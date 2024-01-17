@@ -1,5 +1,7 @@
 # OBS-Controller API
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7effd0e67a70432eb40c85bdbabba728)](https://app.codacy.com/gh/GravityDarkLab/obs-controller-api?utm_source=github.com&utm_medium=referral&utm_content=GravityDarkLab/obs-controller-api&utm_campaign=Badge_Grade)
+
 This is an API for controlling OBS Studio via HTTP requests.
 It is written in Java with Spring Boot and uses
 the [obs-websocket](https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#startrecord)
