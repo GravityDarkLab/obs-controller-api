@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OBSWebSocketClient extends WebSocketClient {
 	private final static int JSON_INDENT_FACTOR = 4;
+
 	private final static String SECRET_ALGORITHM = "SHA-256";
 
 	private final String obsPassword;
@@ -26,6 +27,7 @@ public class OBSWebSocketClient extends WebSocketClient {
 	private String authToken = "";
 
 	static int requestID = 0;
+
 	static int rpcVersion = 1;
 
 	public OBSWebSocketClient(String ipAddress, int port, String password) throws URISyntaxException {
