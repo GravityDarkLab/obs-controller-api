@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7effd0e67a70432eb40c85bdbabba728)](https://app.codacy.com/gh/GravityDarkLab/obs-controller-api?utm_source=github.com&utm_medium=referral&utm_content=GravityDarkLab/obs-controller-api&utm_campaign=Badge_Grade)
 # OBS-Controller API
 
 This is an API for controlling OBS Studio via HTTP requests.
