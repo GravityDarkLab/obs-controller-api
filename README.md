@@ -3,7 +3,7 @@
 
 This is an API for controlling OBS Studio via HTTP requests.
 It is written in Java with Spring Boot and uses
-the [obs-websocket](https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#startrecord)
+the [obs-websocket](https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md)
 plugin.
 
 ![OBS-Controller-API.png](assets/OBS-Controller-API.png)
