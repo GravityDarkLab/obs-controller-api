@@ -1,6 +1,7 @@
 package com.gravitylab.obscontrollerapi.websocket;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,32 +13,25 @@ import java.util.concurrent.TimeUnit;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
 public class OBSWebSocketClient extends WebSocketClient {
 
-	@Value("${obs.websocket.password}")
-	private String obsPassword;
+	private final String obsPassword;
 
-	private String salt = "";
-	private String challenge = "";
 	private String authToken = "";
-
-	private URI serverUri;
 
 	static int requestID = 0;
 	static int rpcVersion = 1;
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-	@Autowired
-	public OBSWebSocketClient(@Value("${obs.websocket.uri}") URI serverUri) {
-		super(serverUri);
+	public OBSWebSocketClient(String ipAddress, int port, String password) throws URISyntaxException {
+		super(new URI("ws://" + ipAddress + ":" + port));
+		log.info("OBSWebSocketClient initialised!");
+		this.obsPassword = password;
+		log.info("OBS Password set to {}", this.obsPassword);
 	}
 
 	@Override
@@ -59,6 +53,7 @@ public class OBSWebSocketClient extends WebSocketClient {
 
 		if (operation == 0) {
 			handleAuthentication(receivedJson);
+			log.info("Authentication successful!");
 		}
 	}
 
@@ -87,8 +82,8 @@ public class OBSWebSocketClient extends WebSocketClient {
 
 	private void handleAuthentication(JSONObject receivedJson) {
 		JSONObject authenticationData = receivedJson.optJSONObject("d").getJSONObject("authentication");
-		this.salt = authenticationData.getString("salt");
-		this.challenge = authenticationData.getString("challenge");
+		String salt = authenticationData.getString("salt");
+		String challenge = authenticationData.getString("challenge");
 		this.authToken = generateAuthToken(salt, challenge);
 		log.info("Token generated :)");
 	}

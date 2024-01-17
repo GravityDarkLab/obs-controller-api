@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gravitylab.obscontrollerapi.service.OBSWebSocketService;
@@ -22,36 +23,45 @@ public class OBSController {
 		this.obsWebSocketService = obsWebSocketService;
 	}
 
+	@PostMapping("/connect")
+	public ResponseEntity<?> connect(@RequestParam String ipAddress, @RequestParam int port,
+			@RequestParam String password) {
+		try {
+			obsWebSocketService.connectClient(ipAddress, port, password);
+			return ResponseEntity.ok("Connected to OBS at " + ipAddress + ":" + port);
+		} catch (Exception e) {
+			log.error("Error connecting to OBS: ", e);
+			return ResponseEntity.badRequest().body("Failed to connect: " + e.getMessage());
+		}
+	}
+
 	@PostMapping("/authenticate")
-	public ResponseEntity<?> authenticate() {
-		this.obsWebSocketService.authenticate();
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> authenticate(@RequestParam String ipAddress, @RequestParam int port) {
+		obsWebSocketService.authenticate(ipAddress, port);
+		return ResponseEntity.ok("Authenticated OBS at " + ipAddress + ":" + port);
 	}
 
 	@PostMapping("/reconnect")
-	public ResponseEntity<?> reconnect() {
-		this.obsWebSocketService.reconnect();
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> reconnect(@RequestParam String ipAddress, @RequestParam int port) {
+		obsWebSocketService.reconnect(ipAddress, port);
+		return ResponseEntity.ok("Reconnected to OBS at " + ipAddress + ":" + port);
 	}
 
-	@PostMapping("disconnect")
-	public ResponseEntity<?> disconnect() {
-		obsWebSocketService.disconnect();
-		return ResponseEntity.ok().build();
+	@PostMapping("/disconnect")
+	public ResponseEntity<?> disconnect(@RequestParam String ipAddress, @RequestParam int port) {
+		obsWebSocketService.disconnect(ipAddress, port);
+		return ResponseEntity.ok("Disconnected from OBS at " + ipAddress + ":" + port);
 	}
 
 	@PostMapping("/startRecording")
-	public ResponseEntity<?> startRecording() {
-		// Call service method to start recording
-		this.obsWebSocketService.startRecording();
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> startRecording(@RequestParam String ipAddress, @RequestParam int port) {
+		obsWebSocketService.startRecording(ipAddress, port);
+		return ResponseEntity.ok("Started recording on OBS at " + ipAddress + ":" + port);
 	}
 
 	@PostMapping("/stopRecording")
-	public ResponseEntity<?> stopRecording() {
-		// Call service method to stop recording
-		obsWebSocketService.stopRecording();
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> stopRecording(@RequestParam String ipAddress, @RequestParam int port) {
+		obsWebSocketService.stopRecording(ipAddress, port);
+		return ResponseEntity.ok("Stopped recording on OBS at " + ipAddress + ":" + port);
 	}
-
 }
