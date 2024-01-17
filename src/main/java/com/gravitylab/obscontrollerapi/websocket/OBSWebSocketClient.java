@@ -12,11 +12,14 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
 import com.gravitylab.obscontrollerapi.utils.AuthTokenGenerationException;
+import com.gravitylab.obscontrollerapi.utils.Operation;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OBSWebSocketClient extends WebSocketClient {
+	private final static int JSON_INDENT_FACTOR = 4;
+	private final static String SECRET_ALGORITHM = "SHA-256";
 
 	private final String obsPassword;
 
@@ -40,15 +43,15 @@ public class OBSWebSocketClient extends WebSocketClient {
 	public void onMessage(String s) {
 		JSONObject receivedJson = new JSONObject(s);
 		if (!receivedJson.has("op") || !receivedJson.has("d")) {
-			log.info("Received message from OBS Websocket {}", receivedJson.toString(4));
+			log.info("Received message from OBS Websocket {}", receivedJson.toString(JSON_INDENT_FACTOR));
 			return;
 		}
-		log.info("Message from OBS Websocket {}", receivedJson.toString(4));
+		log.info("Message from OBS Websocket {}", receivedJson.toString(JSON_INDENT_FACTOR));
 
 		int operation = receivedJson.getInt("op");
 		rpcVersion = setRpcVersion(receivedJson);
 
-		if (operation == 0) {
+		if (operation == Operation.HELLO.getOpCode()) {
 			handleAuthentication(receivedJson);
 			log.info("Authentication successful!");
 		}
@@ -86,7 +89,7 @@ public class OBSWebSocketClient extends WebSocketClient {
 
 	private void sendStartRecordRequest() {
 		JSONObject request = new JSONObject();
-		request.put("op", 6);
+		request.put("op", Operation.REQUEST.getOpCode());
 		JSONObject data = new JSONObject();
 		data.put("requestType", "StartRecord");
 		data.put("requestId", requestID++);
@@ -95,29 +98,29 @@ public class OBSWebSocketClient extends WebSocketClient {
 		data.put("requestData", requestData);
 		request.put("d", data);
 		this.send(request.toString());
-		log.info("Sent request to OBS Websocket {}", request.toString(4));
+		log.info("Sent request to OBS Websocket {}", request.toString(JSON_INDENT_FACTOR));
 	}
 
 	private void sendStopRecordRequest() {
 		JSONObject stopRecordRequest = new JSONObject();
-		stopRecordRequest.put("op", 6); // Assuming '6' is the operation code for StopRecord
+		stopRecordRequest.put("op", Operation.REQUEST.getOpCode()); // Assuming '6' is the operation code for StopRecord
 		JSONObject data = new JSONObject();
 		data.put("requestType", "StopRecord");
 		data.put("requestId", requestID++);
 		stopRecordRequest.put("d", data);
 		this.send(stopRecordRequest.toString());
-		log.info("Sent StopRecord request to OBS Websocket {}", stopRecordRequest.toString(4));
+		log.info("Sent StopRecord request to OBS Websocket {}", stopRecordRequest.toString(JSON_INDENT_FACTOR));
 	}
 
 	private void sendIdentifyMessage(String authToken) {
 		JSONObject identifyMessage = new JSONObject();
-		identifyMessage.put("op", 1);
+		identifyMessage.put("op", Operation.IDENTIFY.getOpCode());
 		JSONObject data = new JSONObject();
 		data.put("rpcVersion", rpcVersion);
 		data.put("authentication", authToken);
 		identifyMessage.put("d", data);
 		this.send(identifyMessage.toString());
-		log.info("Sent identify message to OBS Websocket {}", identifyMessage.toString(4));
+		log.info("Sent identify message to OBS Websocket {}", identifyMessage.toString(JSON_INDENT_FACTOR));
 	}
 
 	private String generateAuthToken(String salt, String challenge) {
@@ -140,7 +143,7 @@ public class OBSWebSocketClient extends WebSocketClient {
 	}
 
 	private static byte[] sha256Hash(String input) throws NoSuchAlgorithmException {
-		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		MessageDigest digest = MessageDigest.getInstance(SECRET_ALGORITHM);
 		return digest.digest(input.getBytes());
 	}
 
@@ -149,7 +152,6 @@ public class OBSWebSocketClient extends WebSocketClient {
 	}
 
 	private int setRpcVersion(JSONObject receivedJson) {
-		int rpcVersion = 1;
 		JSONObject data = receivedJson.getJSONObject("d");
 		if (data.has("rpcVersion")) {
 			rpcVersion = data.getInt("rpcVersion");
