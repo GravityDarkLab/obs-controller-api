@@ -13,6 +13,14 @@ public class OBSWebSocketService {
 
 	private final Map<String, OBSWebSocketClient> clients = new ConcurrentHashMap<>();
 
+	/**
+	 * Connects to an OBS instance and stores the client in a map
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 * @param password  Password of the OBS instance
+	 * @throws URISyntaxException thrown if the URI is invalid
+	 */
 	public void connectClient(String ipAddress, int port, String password) throws URISyntaxException {
 		String key = createClientKey(ipAddress, port);
 		OBSWebSocketClient client = new OBSWebSocketClient(ipAddress, port, password);
@@ -20,6 +28,12 @@ public class OBSWebSocketService {
 		client.connect();
 	}
 
+	/**
+	 * Authenticates an OBS instance
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 */
 	public void authenticate(String ipAddress, int port) {
 		OBSWebSocketClient client = getClient(ipAddress, port);
 		if (client != null) {
@@ -27,6 +41,12 @@ public class OBSWebSocketService {
 		}
 	}
 
+	/**
+	 * Disconnects from an OBS instance
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 */
 	public void disconnect(String ipAddress, int port) {
 		OBSWebSocketClient client = getClient(ipAddress, port);
 		if (client != null) {
@@ -35,6 +55,12 @@ public class OBSWebSocketService {
 		}
 	}
 
+	/**
+	 * Starts recording on an OBS instance
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 */
 	public void startRecording(String ipAddress, int port) {
 		OBSWebSocketClient client = getClient(ipAddress, port);
 		if (client != null) {
@@ -42,6 +68,12 @@ public class OBSWebSocketService {
 		}
 	}
 
+	/**
+	 * Stops recording on an OBS instance
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 */
 	public void stopRecording(String ipAddress, int port) {
 		OBSWebSocketClient client = getClient(ipAddress, port);
 		if (client != null) {
@@ -49,6 +81,12 @@ public class OBSWebSocketService {
 		}
 	}
 
+	/**
+	 * Reconnects to an OBS instance
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 */
 	public void reconnect(String ipAddress, int port) {
 		OBSWebSocketClient client = getClient(ipAddress, port);
 		if (client != null) {
@@ -56,10 +94,24 @@ public class OBSWebSocketService {
 		}
 	}
 
+	/**
+	 * Gets an OBS client from the map
+	 * 
+	 * @param ipAddress IP address of the OBS instance
+	 * @param port      Port of the OBS instance
+	 * @return OBS client
+	 */
 	private OBSWebSocketClient getClient(String ipAddress, int port) {
 		return clients.get(createClientKey(ipAddress, port));
 	}
 
+	/**
+	 * Creates a key for the OBS client map
+	 * 
+	 * @param ipAddress IP address
+	 * @param port      Port
+	 * @return key
+	 */
 	private String createClientKey(String ipAddress, int port) {
 		return ipAddress + ":" + port;
 	}

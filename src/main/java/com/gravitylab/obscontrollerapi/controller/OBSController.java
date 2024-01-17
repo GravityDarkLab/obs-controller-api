@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gravitylab.obscontrollerapi.service.OBSWebSocketService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -23,6 +24,7 @@ public class OBSController {
 		this.obsWebSocketService = obsWebSocketService;
 	}
 
+	@Tag(name = "Connection Management")
 	@PostMapping("/connect")
 	public ResponseEntity<?> connect(@RequestParam String ipAddress, @RequestParam int port,
 			@RequestParam String password) {
@@ -35,30 +37,35 @@ public class OBSController {
 		}
 	}
 
+	@Tag(name = "Connection Management")
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticate(@RequestParam String ipAddress, @RequestParam int port) {
 		obsWebSocketService.authenticate(ipAddress, port);
 		return ResponseEntity.ok("Authenticated OBS at " + ipAddress + ":" + port);
 	}
 
+	@Tag(name = "Connection Management")
 	@PostMapping("/reconnect")
 	public ResponseEntity<?> reconnect(@RequestParam String ipAddress, @RequestParam int port) {
 		obsWebSocketService.reconnect(ipAddress, port);
 		return ResponseEntity.ok("Reconnected to OBS at " + ipAddress + ":" + port);
 	}
 
+	@Tag(name = "Connection Management")
 	@PostMapping("/disconnect")
 	public ResponseEntity<?> disconnect(@RequestParam String ipAddress, @RequestParam int port) {
 		obsWebSocketService.disconnect(ipAddress, port);
 		return ResponseEntity.ok("Disconnected from OBS at " + ipAddress + ":" + port);
 	}
 
+	@Tag(name = "Recording Control")
 	@PostMapping("/startRecording")
 	public ResponseEntity<?> startRecording(@RequestParam String ipAddress, @RequestParam int port) {
 		obsWebSocketService.startRecording(ipAddress, port);
 		return ResponseEntity.ok("Started recording on OBS at " + ipAddress + ":" + port);
 	}
 
+	@Tag(name = "Recording Control")
 	@PostMapping("/stopRecording")
 	public ResponseEntity<?> stopRecording(@RequestParam String ipAddress, @RequestParam int port) {
 		obsWebSocketService.stopRecording(ipAddress, port);

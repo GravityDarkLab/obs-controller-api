@@ -6,9 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -25,13 +22,11 @@ public class OBSWebSocketClient extends WebSocketClient {
 
 	static int requestID = 0;
 	static int rpcVersion = 1;
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public OBSWebSocketClient(String ipAddress, int port, String password) throws URISyntaxException {
 		super(new URI("ws://" + ipAddress + ":" + port));
-		log.info("OBSWebSocketClient initialised!");
 		this.obsPassword = password;
-		log.info("OBS Password set to {}", this.obsPassword);
+		log.info("OBSWebSocketClient initialised!");
 	}
 
 	@Override
@@ -85,7 +80,6 @@ public class OBSWebSocketClient extends WebSocketClient {
 		String salt = authenticationData.getString("salt");
 		String challenge = authenticationData.getString("challenge");
 		this.authToken = generateAuthToken(salt, challenge);
-		log.info("Token generated :)");
 	}
 
 	private void sendStartRecordRequest() {
@@ -100,20 +94,6 @@ public class OBSWebSocketClient extends WebSocketClient {
 		request.put("d", data);
 		this.send(request.toString());
 		log.info("Sent request to OBS Websocket {}", request.toString(4));
-	}
-
-	private void handleRecordStateChange(JSONObject receivedJson) {
-		JSONObject eventData = receivedJson.optJSONObject("d").getJSONObject("eventData");
-		String eventType = receivedJson.getJSONObject("d").getString("eventType");
-		boolean outputActive = eventData.getBoolean("outputActive");
-		String outputState = eventData.getString("outputState");
-		var outputPath = eventData.get("outputPath");
-
-		if (outputActive && outputState.equals("OBS_WEBSOCKET_OUTPUT_STARTED")) {
-			log.info("Event type: {} ,Output active: {}, Output state: {}, Output path: {}", eventType, outputActive,
-					outputState, outputPath);
-			scheduler.schedule(this::sendStopRecordRequest, 30, TimeUnit.SECONDS);
-		}
 	}
 
 	private void sendStopRecordRequest() {
