@@ -5,7 +5,7 @@ It is written in Java with Spring Boot and uses
 the [obs-websocket](https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#startrecord)
 plugin.
 
-![OBS Controller API.png](assets/OBS Controller API.png)
+![OBS-Controller-API.png](assets/OBS-Controller-API.png)
 
 ## Installation
 
