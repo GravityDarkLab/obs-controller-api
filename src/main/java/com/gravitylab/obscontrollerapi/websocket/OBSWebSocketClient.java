@@ -36,6 +36,12 @@ public class OBSWebSocketClient extends WebSocketClient {
 		log.info("OBSWebSocketClient initialised!");
 	}
 
+	public OBSWebSocketClient(String ipAddress, int port) throws URISyntaxException {
+		super(new URI("ws://" + ipAddress + ":" + port));
+		this.obsPassword = null;
+		log.info("OBSWebSocketClient initialised!");
+	}
+
 	@Override
 	public void onOpen(ServerHandshake serverHandshake) {
 		log.info("Connected to OBS Websocket");
@@ -162,5 +168,21 @@ public class OBSWebSocketClient extends WebSocketClient {
 			rpcVersion = data.getInt("negotiatedRpcVersion");
 		}
 		return rpcVersion;
+	}
+
+	public String testConnection() {
+		return sendTestRequest();
+	}
+
+	private String sendTestRequest() {
+		JSONObject request = new JSONObject();
+		request.put("op", Operation.REQUEST.getOpCode());
+		JSONObject data = new JSONObject();
+		data.put("requestType", "GetVersion");
+		data.put("requestId", requestID++);
+		request.put("d", data);
+		this.send(request.toString());
+		log.info("Sent request to OBS Websocket {}", request.toString(JSON_INDENT_FACTOR));
+		return request.toString();
 	}
 }
