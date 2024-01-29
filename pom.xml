@@ -15,7 +15,7 @@
     <name>obs-controller-api</name>
     <description>API Controller for OBS</description>
     <properties>
-        <java.version>18</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
